@@ -3,6 +3,8 @@
 namespace app\models\search;
 
 use app\models\History;
+use app\src\Activity\DTO\EventWidgetData;
+use app\src\Activity\Interfaces\IHistoryAbleModel;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
@@ -28,6 +30,19 @@ class HistorySearch extends History
     {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
+    }
+
+    public function getEventData(): ?EventWidgetData
+    {
+        if (false === $this->relatedObject instanceof IHistoryAbleModel) {
+            throw new \LogicException('Model should be history able');
+        }
+
+        return $this
+            ->relatedObject
+            ->historyEvents()
+            ->firstByHistoryModel($this)
+            ?->getWidgetData();
     }
 
     /**
