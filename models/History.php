@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\models\traits\ObjectNameTrait;
+use app\src\Activity\DB\MorphMap;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -21,6 +22,8 @@ use yii\db\ActiveRecord;
  * @property integer $user_id
  *
  * @property string $eventText
+ *
+ * @property ActiveRecord $relatedObject
  *
  * @property Customer $customer
  * @property User $user
@@ -105,6 +108,18 @@ class History extends ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    public function getRelatedObject(): ActiveQuery
+    {
+        $type = $this->object; // 'object' contains the type (e.g., 'task', 'customer')
+        $map = MorphMap::map();
+
+        if (isset($map[$type])) {
+            return $this->hasOne($map[$type], ['id' => 'object_id']);
+        }
+
+        throw new \LogicException('...');
     }
 
     /**
