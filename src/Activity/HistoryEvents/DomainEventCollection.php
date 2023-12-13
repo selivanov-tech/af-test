@@ -35,8 +35,9 @@ class DomainEventCollection
 
     public function firstByHistoryModel(History $history): ?AbstractEventData
     {
+        /** @var AbstractEventData $event */
         foreach ($this->events as $event) {
-            if ($event::EVENT_NAME === $history->event) {
+            if ($event::getEventName() === $history->event) {
                 return new $event($history, $this->model);
             }
         }

@@ -2,20 +2,20 @@
 
 namespace app\src\Activity\HistoryEvents\Sms\Traits;
 
-use app\src\Activity\DTO\EventWidgetData;
+use app\src\Activity\DTO\CommonEventWidgetData;
 use app\src\Activity\HistoryEvents\Sms\Incoming;
 use app\src\Activity\HistoryEvents\Sms\Outgoing;
 use DateTime;
 use LogicException;
 use Yii;
 
-trait CommonWidgetData
+trait CommonDataTrait
 {
-    public function getWidgetData(): EventWidgetData
+    public function getWidgetData(): CommonEventWidgetData
     {
         $historyModel = $this->historyModel;
 
-        return new EventWidgetData(
+        return new CommonEventWidgetData(
             viewName: '_item_common',
             user: $historyModel->user,
             body: $this->getBody(),

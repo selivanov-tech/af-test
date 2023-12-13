@@ -25,8 +25,10 @@ abstract class AbstractEventData
 //        todo: public readonly \BackedEnum|IEventEnum         $eventEnum,
     )
     {
-        assert(!empty(static::EVENT_NAME), new LogicException('...'));
+        assert(!empty(static::getEventName()), new LogicException('Event name shouldn\'t be empty.'));
     }
 
-    abstract public function getWidgetData(): EventWidgetData;
+    abstract public static function getEventName(): string;
+
+    abstract public function getWidgetData(): CommonEventWidgetData;
 }

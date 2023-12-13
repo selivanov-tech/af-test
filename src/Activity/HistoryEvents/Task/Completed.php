@@ -4,14 +4,17 @@ namespace app\src\Activity\HistoryEvents\Task;
 
 use app\models\Task;
 use app\src\Activity\DTO\AbstractEventData;
-use app\src\Activity\HistoryEvents\Task\Traits\CommonWidgetData;
+use app\src\Activity\HistoryEvents\Task\Traits\CommonDataTrait;
 
 /**
  * @property Task $eventModel
  */
 class Completed extends AbstractEventData
 {
-    use CommonWidgetData;
+    use CommonDataTrait;
 
-    public const EVENT_NAME = 'completed_task';
+    public static function getEventName(): string
+    {
+        return 'completed_task';
+    }
 }
