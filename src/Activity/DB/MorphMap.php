@@ -25,9 +25,11 @@ class MorphMap
             'deal' => Customer::class,
             'loan' => Customer::class,
 
+            'call' => Call::class,
+            'call_ytel' => Call::class,
+
             'sms' => Sms::class,
             'task' => Task::class,
-            'call' => Call::class,
             'fax' => Fax::class,
             'user' => User::class,
             // ...

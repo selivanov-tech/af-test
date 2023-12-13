@@ -2,6 +2,11 @@
 
 namespace app\models;
 
+use app\src\Activity\HistoryEvents\Call\Incoming;
+use app\src\Activity\HistoryEvents\Call\Outgoing;
+use app\src\Activity\HistoryEvents\DomainEventCollection;
+use app\src\Activity\Interfaces\IHistoryAbleModel;
+use app\src\Activity\Traits\HistoryRelationTrait;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -31,8 +36,10 @@ use yii\db\ActiveRecord;
  * @property Customer $customer
  * @property User $user
  */
-class Call extends ActiveRecord
+class Call extends ActiveRecord implements IHistoryAbleModel
 {
+    use HistoryRelationTrait;
+
     const STATUS_NO_ANSWERED = 0;
     const STATUS_ANSWERED = 1;
 
@@ -178,5 +185,13 @@ class Call extends ActiveRecord
             return $this->duration >= 3600 ? gmdate("H:i:s", $this->duration) : gmdate("i:s", $this->duration);
         }
         return '00:00';
+    }
+
+    public function historyEvents(): DomainEventCollection
+    {
+        return DomainEventCollection::create($this, [
+            Incoming::class,
+            Outgoing::class,
+        ]);
     }
 }

@@ -4,6 +4,7 @@ namespace app\models\search;
 
 use app\models\History;
 use app\src\Activity\DTO\AbstractEventWidgetData;
+use app\src\Activity\DTO\CommonEventWidgetData;
 use app\src\Activity\Interfaces\IHistoryAbleModel;
 use LogicException;
 use yii\data\ActiveDataProvider;
@@ -23,6 +24,11 @@ class HistorySearch extends History
 
     public function getEventData(): ?AbstractEventWidgetData
     {
+        if (is_null($this->relatedObject)) {
+            // todo: log or/and delete history record
+            return CommonEventWidgetData::createFromDeleted($this);
+        }
+
         if (false === $this->relatedObject instanceof IHistoryAbleModel) {
             throw new LogicException(
                 sprintf('Model [%s] should be history able', $this->relatedObject::class)
@@ -31,7 +37,7 @@ class HistorySearch extends History
 
         return $this
             ->relatedObject
-            ->historyEvents()
+            ?->historyEvents()
             ->firstByHistoryModel($this)
             ?->getWidgetData();
     }
