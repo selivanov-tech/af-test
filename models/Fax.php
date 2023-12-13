@@ -2,6 +2,11 @@
 
 namespace app\models;
 
+use app\src\Activity\HistoryEvents\DomainEventCollection;
+use app\src\Activity\HistoryEvents\Fax\Incoming;
+use app\src\Activity\HistoryEvents\Fax\Outgoing;
+use app\src\Activity\Interfaces\IHistoryAbleModel;
+use app\src\Activity\Traits\HistoryRelationTrait;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -21,8 +26,10 @@ use yii\db\ActiveRecord;
  *
  * @property User $user
  */
-class Fax extends ActiveRecord
+class Fax extends ActiveRecord implements IHistoryAbleModel
 {
+    use HistoryRelationTrait;
+
     const DIRECTION_INCOMING = 0;
     const DIRECTION_OUTGOING = 1;
 
@@ -92,4 +99,11 @@ class Fax extends ActiveRecord
         return self::getTypeTexts()[$this->type] ?? $this->type;
     }
 
+    public function historyEvents(): DomainEventCollection
+    {
+        return DomainEventCollection::create($this, [
+            Incoming::class,
+            Outgoing::class
+        ]);
+    }
 }
