@@ -5,8 +5,8 @@ namespace app\models\search;
 use app\models\History;
 use app\src\Activity\DTO\EventWidgetData;
 use app\src\Activity\Interfaces\IHistoryAbleModel;
-use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\validators\InlineValidator;
 
 /**
  * HistorySearch represents the model behind the search form about `app\models\History`.
@@ -15,21 +15,9 @@ use yii\data\ActiveDataProvider;
  */
 class HistorySearch extends History
 {
-    /**
-     * @inheritdoc
-     */
-    public function rules()
+    public function validateEvent(string $attribute, mixed $params, InlineValidator $validator): void
     {
-        return [];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function scenarios()
-    {
-        // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
+        return;
     }
 
     public function getEventData(): ?EventWidgetData
