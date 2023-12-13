@@ -2,6 +2,11 @@
 
 namespace app\models;
 
+use app\src\Activity\HistoryEvents\DomainEventCollection;
+use app\src\Activity\HistoryEvents\Sms\Incoming;
+use app\src\Activity\HistoryEvents\Sms\Outgoing;
+use app\src\Activity\Interfaces\IHistoryAbleModel;
+use app\src\Activity\Traits\HistoryRelationTrait;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -27,8 +32,10 @@ use yii\db\ActiveRecord;
  * @property Customer $customer
  * @property User $user
  */
-class Sms extends ActiveRecord
+class Sms extends ActiveRecord implements IHistoryAbleModel
 {
+    use HistoryRelationTrait;
+
     const DIRECTION_INCOMING = 0;
     const DIRECTION_OUTGOING = 1;
 
@@ -168,5 +175,13 @@ class Sms extends ActiveRecord
     public function getDirectionText()
     {
         return self::getDirectionTextByValue($this->direction);
+    }
+
+    public function historyEvents(): DomainEventCollection
+    {
+        return DomainEventCollection::create($this, [
+            Incoming::class,
+            Outgoing::class,
+        ]);
     }
 }
