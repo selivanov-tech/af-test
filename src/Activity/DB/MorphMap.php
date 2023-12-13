@@ -21,6 +21,10 @@ class MorphMap
     {
         return [
             'customer' => Customer::class,
+            'lead' => Customer::class,
+            'deal' => Customer::class,
+            'loan' => Customer::class,
+
             'sms' => Sms::class,
             'task' => Task::class,
             'call' => Call::class,

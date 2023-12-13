@@ -3,7 +3,7 @@
 namespace app\models\search;
 
 use app\models\History;
-use app\src\Activity\DTO\CommonEventWidgetData;
+use app\src\Activity\DTO\AbstractEventWidgetData;
 use app\src\Activity\Interfaces\IHistoryAbleModel;
 use LogicException;
 use yii\data\ActiveDataProvider;
@@ -21,7 +21,7 @@ class HistorySearch extends History
         return;
     }
 
-    public function getEventData(): ?CommonEventWidgetData
+    public function getEventData(): ?AbstractEventWidgetData
     {
         if (false === $this->relatedObject instanceof IHistoryAbleModel) {
             throw new LogicException(

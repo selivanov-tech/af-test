@@ -3,12 +3,11 @@
 namespace app\src\Activity\HistoryEvents\Customer\Traits;
 
 use app\models\Customer;
-use app\src\Activity\DTO\CommonEventWidgetData;
 use app\src\Activity\DTO\OldNewEventWidgetData;
 
 trait CommonDataTrait
 {
-    public function getWidgetData(): CommonEventWidgetData
+    public function getWidgetData(): OldNewEventWidgetData
     {
         $historyModel = $this->historyModel;
 

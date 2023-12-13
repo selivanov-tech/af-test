@@ -8,8 +8,8 @@ use DateTime;
 readonly class CommonEventWidgetData extends AbstractEventWidgetData
 {
     public function __construct(
-        public string   $viewName,
-        public User     $user,
+        string          $viewName,
+        public ?User    $user,
         public string   $body,
         public string   $iconClass,
         public DateTime $footerDatetime,

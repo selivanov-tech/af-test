@@ -30,5 +30,5 @@ abstract class AbstractEventData
 
     abstract public static function getEventName(): string;
 
-    abstract public function getWidgetData(): CommonEventWidgetData;
+    abstract public function getWidgetData(): AbstractEventWidgetData;
 }
