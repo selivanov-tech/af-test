@@ -5,6 +5,7 @@ namespace app\models\search;
 use app\models\History;
 use app\src\Activity\DTO\EventWidgetData;
 use app\src\Activity\Interfaces\IHistoryAbleModel;
+use LogicException;
 use yii\data\ActiveDataProvider;
 use yii\validators\InlineValidator;
 
@@ -23,7 +24,9 @@ class HistorySearch extends History
     public function getEventData(): ?EventWidgetData
     {
         if (false === $this->relatedObject instanceof IHistoryAbleModel) {
-            throw new \LogicException('Model should be history able');
+            throw new LogicException(
+                sprintf('Model [%s] should be history able', $this->relatedObject::class)
+            );
         }
 
         return $this
@@ -42,7 +45,7 @@ class HistorySearch extends History
      */
     public function search($params)
     {
-        $query = History::find();
+        $query = $this::find();
 
         // add conditions that should always apply here
 

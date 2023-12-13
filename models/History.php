@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\models\traits\ObjectNameTrait;
 use app\src\Activity\DB\MorphMap;
+use LogicException;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -137,7 +138,7 @@ class History extends ActiveRecord
             return $this->hasOne($map[$type], ['id' => 'object_id']);
         }
 
-        throw new \LogicException('...');
+        throw new LogicException(sprintf('"%s" class not mapped with morph.', $type));
     }
 
     /**
