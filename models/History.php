@@ -129,9 +129,15 @@ class History extends ActiveRecord
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
-    public function getRelatedObject(): ActiveQuery
+    public function getRelatedObject(): ActiveRecord|ActiveQuery
     {
         $type = $this->object; // 'object' contains the type (e.g., 'task', 'customer')
+
+        $loaded = MorphMap::checkAndGetRelationIfLoaded($this);
+        if ($loaded) {
+            return $loaded;
+        }
+
         $map = MorphMap::map();
 
         if (isset($map[$type])) {

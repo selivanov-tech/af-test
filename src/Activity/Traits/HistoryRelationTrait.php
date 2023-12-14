@@ -18,6 +18,6 @@ trait HistoryRelationTrait
     {
         return $this
             ->hasMany(History::class, ['object_id' => 'id'])
-            ->where(['object' => MorphMap::getByClassName($this::class)]);
+            ->where(['in', 'object', MorphMap::getByClassName($this::class)]);
     }
 }

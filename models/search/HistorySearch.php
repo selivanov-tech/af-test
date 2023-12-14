@@ -3,6 +3,7 @@
 namespace app\models\search;
 
 use app\models\History;
+use app\src\Activity\DB\MorphMap;
 use app\src\Activity\DTO\AbstractEventWidgetData;
 use app\src\Activity\DTO\CommonEventWidgetData;
 use app\src\Activity\Interfaces\IHistoryAbleModel;
@@ -74,15 +75,9 @@ class HistorySearch extends History
             return $dataProvider;
         }
 
-        $query->addSelect('history.*');
-        $query->with([
-            'customer',
-            'user',
-            'sms',
-            'task',
-            'call',
-            'fax',
-        ]);
+        $query
+            ->addSelect('history.*')
+            ->with(MorphMap::getRelations());
 
         return $dataProvider;
     }
