@@ -4,12 +4,13 @@ namespace app\src\Activity\HistoryEvents\Task;
 
 use app\models\Task;
 use app\src\Activity\DTO\AbstractEventData;
+use app\src\Activity\DTO\Interfaces\IEventWithBody;
 use app\src\Activity\HistoryEvents\Task\Traits\CommonDataTrait;
 
 /**
  * @property Task $eventModel
  */
-class Updated extends AbstractEventData
+class Updated extends AbstractEventData implements IEventWithBody
 {
     use CommonDataTrait;
 

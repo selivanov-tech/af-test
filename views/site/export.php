@@ -2,14 +2,16 @@
 
 /**
  * @var $this yii\web\View
- * @var $model \app\models\History
+ * @var $model History
  * @var $dataProvider yii\data\ActiveDataProvider
  * @var $exportType string
  */
 
 use app\models\History;
+use app\models\search\HistorySearch;
+use app\src\Activity\DTO\Interfaces\IEventWithBody;
+use app\src\Activity\Interfaces\IHistoryAbleModel;
 use app\widgets\Export\Export;
-use app\widgets\HistoryList\helpers\HistoryListHelper;
 
 $filename = 'history';
 $filename .= '-' . time();
@@ -28,26 +30,37 @@ ini_set('memory_limit', '2048M');
         ],
         [
             'label' => Yii::t('app', 'User'),
-            'value' => function (History $model) {
+            'value' => function (HistorySearch $model) {
                 return isset($model->user) ? $model->user->username : Yii::t('app', 'System');
             }
         ],
         [
             'label' => Yii::t('app', 'Type'),
-            'value' => function (History $model) {
+            'value' => function (HistorySearch $model) {
                 return $model->object;
             }
         ],
         [
             'label' => Yii::t('app', 'Event'),
-            'value' => function (History $model) {
+            'value' => function (HistorySearch $model) {
                 return $model->eventText;
             }
         ],
         [
             'label' => Yii::t('app', 'Message'),
-            'value' => function (History $model) {
-                return strip_tags(HistoryListHelper::getBodyByModel($model));
+            'value' => function (HistorySearch $model) {
+                if (false === $model->relatedObject instanceof IHistoryAbleModel) {
+                    return '';
+                }
+
+                $historyEvent = $model->relatedObject->historyEvents()->firstByHistoryModel($model);
+                if (false === $historyEvent instanceof IEventWithBody) {
+                    return '';
+                }
+
+                $eventMessage = $historyEvent->getBody();
+
+                return strip_tags($eventMessage);
             }
         ]
     ],
