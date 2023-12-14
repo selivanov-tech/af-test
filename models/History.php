@@ -4,6 +4,8 @@ namespace app\models;
 
 use app\models\traits\ObjectNameTrait;
 use app\src\Activity\DB\MorphMap;
+use app\src\Activity\DTO\AbstractEventData;
+use app\src\Activity\Interfaces\IHistoryAbleModel;
 use LogicException;
 use Yii;
 use yii\db\ActiveQuery;
@@ -145,6 +147,22 @@ class History extends ActiveRecord
         }
 
         throw new LogicException(sprintf('"%s" class not mapped with morph.', $type));
+    }
+
+    public function getRelatedObjectEvent(): ?AbstractEventData
+    {
+        $relatedObject = $this->relatedObject;
+        if (is_null($relatedObject)) {
+            return null;
+        }
+
+        if (false === $relatedObject instanceof IHistoryAbleModel) {
+            throw new LogicException(
+                sprintf('Model [%s] should be history able', $relatedObject::class)
+            );
+        }
+
+        return $relatedObject->historyEvents()->firstByHistoryModel($this);
     }
 
     /**

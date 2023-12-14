@@ -53,7 +53,7 @@ ini_set('memory_limit', '2048M');
                     return '';
                 }
 
-                $historyEvent = $model->relatedObject->historyEvents()->firstByHistoryModel($model);
+                $historyEvent = $model->getRelatedObjectEvent();
                 if (false === $historyEvent instanceof IEventWithBody) {
                     return '';
                 }
