@@ -3,9 +3,10 @@
 namespace app\models\search;
 
 use app\models\History;
-use app\src\Activity\DB\MorphMap;
+use app\src\Activity\DB\HistoryActiveQuery;
 use app\src\Activity\DTO\AbstractEventWidgetData;
 use app\src\Activity\DTO\CommonEventWidgetData;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\validators\InlineValidator;
@@ -17,6 +18,11 @@ use yii\validators\InlineValidator;
  */
 class HistorySearch extends History
 {
+    public static function find(): HistoryActiveQuery
+    {
+        return Yii::createObject(HistoryActiveQuery::class, [get_called_class()]);
+    }
+
     public function validateEvent(string $attribute, mixed $params, InlineValidator $validator): void
     {
         return;
@@ -70,7 +76,8 @@ class HistorySearch extends History
 
         $query
             ->addSelect('history.*')
-            ->with(MorphMap::getRelations());
+            ->with('user')
+            ->withHistoryRelations();
 
         return $dataProvider;
     }

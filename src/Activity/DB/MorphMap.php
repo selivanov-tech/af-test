@@ -8,7 +8,6 @@ use app\models\Fax;
 use app\models\History;
 use app\models\Sms;
 use app\models\Task;
-use app\models\User;
 use InvalidArgumentException;
 use yii\db\ActiveRecord;
 
@@ -77,7 +76,6 @@ class MorphMap
             'sms' => Sms::class,
             'task' => Task::class,
             'fax' => Fax::class,
-            'user' => User::class,
             // ...
         ];
     }
