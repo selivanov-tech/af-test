@@ -2,11 +2,11 @@
 
 namespace app\models;
 
-use app\models\traits\ObjectNameTrait;
-use app\src\Activity\DB\MorphMap;
+use app\models\traits\HistoryRelatedObjectTrait;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\validators\InlineValidator;
 
 /**
  * This is the model class for table "{{%history}}".
@@ -34,7 +34,7 @@ use yii\db\ActiveRecord;
  */
 class History extends ActiveRecord
 {
-    use ObjectNameTrait;
+    use HistoryRelatedObjectTrait;
 
     const EVENT_CREATED_TASK = 'created_task';
     const EVENT_UPDATED_TASK = 'updated_task';
@@ -68,12 +68,29 @@ class History extends ActiveRecord
         return [
             [['ins_ts'], 'safe'],
             [['customer_id', 'object_id', 'user_id'], 'integer'],
-            [['event'], 'required'],
+            ['event', 'validateEvent', 'skipOnEmpty' => false],
             [['message', 'detail'], 'string'],
             [['event', 'object'], 'string', 'max' => 255],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::class, 'targetAttribute' => ['customer_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
+    }
+
+    /**
+     * Method to validate `event` model's column
+     *
+     * @param string $attribute the attribute currently being validated
+     * @param mixed $params the value of the "params" given in the rule
+     * @param InlineValidator $validator related InlineValidator instance.
+     * This parameter is available since version 2.0.11.
+     * @param mixed $current the currently validated value of attribute.
+     * This parameter is available since version 2.0.36.
+     */
+    public function validateEvent(string $attribute, mixed $params, InlineValidator $validator): void
+    {
+        if ($validator->isEmpty($this->event)) {
+            $validator->addError($this, $attribute, 'The event cannot be empty.');
+        }
     }
 
     /**
@@ -108,18 +125,6 @@ class History extends ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
-    }
-
-    public function getRelatedObject(): ActiveQuery
-    {
-        $type = $this->object; // 'object' contains the type (e.g., 'task', 'customer')
-        $map = MorphMap::map();
-
-        if (isset($map[$type])) {
-            return $this->hasOne($map[$type], ['id' => 'object_id']);
-        }
-
-        throw new \LogicException('...');
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace app\controllers;
 
 use app\models\search\HistorySearch;
+use app\src\Activity\HistoryEntry;
+use app\src\Activity\Interfaces\IHistoryExporter;
 use Yii;
 use yii\web\Controller;
 
@@ -45,5 +47,15 @@ class SiteController extends Controller
             'exportType' => $exportType,
             'model' => $model
         ]);
+    }
+
+    public function actionExportOptimized()
+    {
+        /** @var HistoryEntry $historyEntry */
+        $historyEntry = Yii::$app->history;
+
+        $historyEntry->getExporter()->export();
+
+        Yii::$app->end();
     }
 }

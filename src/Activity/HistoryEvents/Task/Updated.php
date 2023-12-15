@@ -4,14 +4,18 @@ namespace app\src\Activity\HistoryEvents\Task;
 
 use app\models\Task;
 use app\src\Activity\DTO\AbstractEventData;
-use app\src\Activity\HistoryEvents\Task\Traits\CommonWidgetData;
+use app\src\Activity\DTO\Interfaces\IEventWithBody;
+use app\src\Activity\HistoryEvents\Task\Traits\CommonDataTrait;
 
 /**
  * @property Task $eventModel
  */
-class Updated extends AbstractEventData
+class Updated extends AbstractEventData implements IEventWithBody
 {
-    use CommonWidgetData;
+    use CommonDataTrait;
 
-    public const EVENT_NAME = 'updated_task';
+    public static function getEventName(): string
+    {
+        return 'updated_task';
+    }
 }
