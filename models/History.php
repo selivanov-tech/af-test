@@ -2,11 +2,7 @@
 
 namespace app\models;
 
-use app\models\traits\ObjectNameTrait;
-use app\src\Activity\DB\MorphMap;
-use app\src\Activity\DTO\AbstractEventData;
-use app\src\Activity\Interfaces\IHistoryAbleModel;
-use LogicException;
+use app\models\traits\HistoryRelatedObjectTrait;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -38,7 +34,7 @@ use yii\validators\InlineValidator;
  */
 class History extends ActiveRecord
 {
-    use ObjectNameTrait;
+    use HistoryRelatedObjectTrait;
 
     const EVENT_CREATED_TASK = 'created_task';
     const EVENT_UPDATED_TASK = 'updated_task';
@@ -129,40 +125,6 @@ class History extends ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
-    }
-
-    public function getRelatedObject(): ActiveRecord|ActiveQuery
-    {
-        $type = $this->object; // 'object' contains the type (e.g., 'task', 'customer')
-
-        $loaded = MorphMap::checkAndGetRelationIfLoaded($this);
-        if ($loaded) {
-            return $loaded;
-        }
-
-        $map = MorphMap::map();
-
-        if (isset($map[$type])) {
-            return $this->hasOne($map[$type], ['id' => 'object_id']);
-        }
-
-        throw new LogicException(sprintf('"%s" class not mapped with morph.', $type));
-    }
-
-    public function getRelatedObjectEvent(): ?AbstractEventData
-    {
-        $relatedObject = $this->relatedObject;
-        if (is_null($relatedObject)) {
-            return null;
-        }
-
-        if (false === $relatedObject instanceof IHistoryAbleModel) {
-            throw new LogicException(
-                sprintf('Model [%s] should be history able', $relatedObject::class)
-            );
-        }
-
-        return $relatedObject->historyEvents()->firstByHistoryModel($this);
     }
 
     /**

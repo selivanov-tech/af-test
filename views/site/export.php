@@ -49,11 +49,11 @@ ini_set('memory_limit', '2048M');
         [
             'label' => Yii::t('app', 'Message'),
             'value' => function (HistorySearch $model) {
-                if (false === $model->relatedObject instanceof IHistoryAbleModel) {
+                if (false === $model->getRelatedObject(fetchFromDB: false) instanceof IHistoryAbleModel) {
                     return '';
                 }
 
-                $historyEvent = $model->getRelatedObjectEvent();
+                $historyEvent = $model->getRelatedObjectEvent(fetchFromDB: false);
                 if (false === $historyEvent instanceof IEventWithBody) {
                     return '';
                 }

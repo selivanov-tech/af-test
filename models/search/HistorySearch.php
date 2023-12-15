@@ -7,6 +7,7 @@ use app\src\Activity\DB\MorphMap;
 use app\src\Activity\DTO\AbstractEventWidgetData;
 use app\src\Activity\DTO\CommonEventWidgetData;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use yii\validators\InlineValidator;
 
 /**
@@ -23,7 +24,7 @@ class HistorySearch extends History
 
     public function getEventData(): ?AbstractEventWidgetData
     {
-        $event = $this->getRelatedObjectEvent()?->getWidgetData();
+        $event = $this->getRelatedObjectEvent(fetchFromDB: false)?->getWidgetData();
         if (is_null($event)) {
             // todo: log or/and delete history record
             return CommonEventWidgetData::createFromDeleted($this);
@@ -43,11 +44,14 @@ class HistorySearch extends History
     {
         $query = $this::find();
 
-        // add conditions that should always apply here
+        // get the total number of articles (but do not fetch the article data yet)
+        $count = $query->count();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        $dataProvider->setPagination(new Pagination(['totalCount' => $count]));
 
         $dataProvider->setSort([
             'defaultOrder' => [
