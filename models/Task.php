@@ -2,6 +2,12 @@
 
 namespace app\models;
 
+use app\src\Activity\HistoryEvents\DomainEventCollection;
+use app\src\Activity\HistoryEvents\Task\Completed;
+use app\src\Activity\HistoryEvents\Task\Created;
+use app\src\Activity\HistoryEvents\Task\Updated;
+use app\src\Activity\Interfaces\IHistoryAbleModel;
+use app\src\Activity\Traits\HistoryRelationTrait;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -33,8 +39,10 @@ use yii\db\ActiveRecord;
  * @property string $isInbox
  * @property string $statusText
  */
-class Task extends ActiveRecord
+class Task extends ActiveRecord implements IHistoryAbleModel
 {
+    use HistoryRelationTrait;
+
     const STATUS_NEW = 0;
     const STATUS_DONE = 1;
     const STATUS_CANCEL = 3;
@@ -165,5 +173,14 @@ class Task extends ActiveRecord
     public function getIsDone()
     {
         return $this->status == self::STATUS_DONE;
+    }
+
+    public function historyEvents(): DomainEventCollection
+    {
+        return DomainEventCollection::create($this, [
+            Created::class,
+            Updated::class,
+            Completed::class,
+        ]);
     }
 }

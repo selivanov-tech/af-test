@@ -3,8 +3,13 @@
 namespace app\models\search;
 
 use app\models\History;
-use yii\base\Model;
+use app\src\Activity\DB\HistoryActiveQuery;
+use app\src\Activity\DTO\AbstractEventWidgetData;
+use app\src\Activity\DTO\CommonEventWidgetData;
+use Yii;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
+use yii\validators\InlineValidator;
 
 /**
  * HistorySearch represents the model behind the search form about `app\models\History`.
@@ -13,21 +18,25 @@ use yii\data\ActiveDataProvider;
  */
 class HistorySearch extends History
 {
-    /**
-     * @inheritdoc
-     */
-    public function rules()
+    public static function find(): HistoryActiveQuery
     {
-        return [];
+        return Yii::createObject(HistoryActiveQuery::class, [get_called_class()]);
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function scenarios()
+    public function validateEvent(string $attribute, mixed $params, InlineValidator $validator): void
     {
-        // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
+        return;
+    }
+
+    public function getEventData(): ?AbstractEventWidgetData
+    {
+        $event = $this->getRelatedObjectEvent(fetchFromDB: false)?->getWidgetData();
+        if (is_null($event)) {
+            // todo: log or/and delete history record
+            return CommonEventWidgetData::createFromDeleted($this);
+        }
+
+        return $event;
     }
 
     /**
@@ -39,13 +48,16 @@ class HistorySearch extends History
      */
     public function search($params)
     {
-        $query = History::find();
+        $query = $this::find();
 
-        // add conditions that should always apply here
+        // get the total number of articles (but do not fetch the article data yet)
+        $count = $query->count();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        $dataProvider->setPagination(new Pagination(['totalCount' => $count]));
 
         $dataProvider->setSort([
             'defaultOrder' => [
@@ -62,15 +74,10 @@ class HistorySearch extends History
             return $dataProvider;
         }
 
-        $query->addSelect('history.*');
-        $query->with([
-            'customer',
-            'user',
-            'sms',
-            'task',
-            'call',
-            'fax',
-        ]);
+        $query
+            ->addSelect('history.*')
+            ->with('user')
+            ->withHistoryRelations();
 
         return $dataProvider;
     }

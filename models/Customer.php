@@ -3,6 +3,11 @@
 namespace app\models;
 
 
+use app\src\Activity\HistoryEvents\Customer\QualityChanged;
+use app\src\Activity\HistoryEvents\Customer\TypeChanged;
+use app\src\Activity\HistoryEvents\DomainEventCollection;
+use app\src\Activity\Interfaces\IHistoryAbleModel;
+use app\src\Activity\Traits\HistoryRelationTrait;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -13,8 +18,10 @@ use yii\db\ActiveRecord;
  * @property integer $id
  * @property string $name
  */
-class Customer extends ActiveRecord
+class Customer extends ActiveRecord implements IHistoryAbleModel
 {
+    use HistoryRelationTrait;
+
     const QUALITY_ACTIVE = 'active';
     const QUALITY_REJECTED = 'rejected';
     const QUALITY_COMMUNITY = 'community';
@@ -95,5 +102,13 @@ class Customer extends ActiveRecord
     public static function getTypeTextByType($type)
     {
         return self::getTypeTexts()[$type] ?? $type;
+    }
+
+    public function historyEvents(): DomainEventCollection
+    {
+        return DomainEventCollection::create($this, [
+            TypeChanged::class,
+            QualityChanged::class,
+        ]);
     }
 }
